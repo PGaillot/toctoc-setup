@@ -2,6 +2,7 @@
 
 # Script de configuration du point d'accès Raspberry Pi
 # Basé sur le tutoriel de raspberrypi-guide.com
+# https://raspberrypi-guide.github.io/networking/create-wireless-access-point
 
 # Vérification des privilèges root
 if [[ $EUID -ne 0 ]]; then
@@ -10,7 +11,6 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Installation des paquets nécessaires
-apt update
 apt install -y dnsmasq hostapd dhcpcd5 netfilter-persistent iptables-persistent
 
 # Arrêt des services
