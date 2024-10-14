@@ -11,6 +11,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Installation des paquets nécessaires
+sudo apt ugrade -y
 sudo apt install dnsmasq hostapd
 
 # Arrêt des services
