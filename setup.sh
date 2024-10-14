@@ -11,8 +11,8 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Installation des paquets nécessaires
-sudo apt ugrade -y
-sudo apt install dnsmasq hostapd
+sudo apt upgrade -y
+sudo apt install dnsmasq hostapd iptables iptables-persistent dhcpcd5
 echo "✅ Installation des paquets nécessaires terminée."
 
 # Arrêt des services
@@ -22,7 +22,6 @@ echo "✅ Arrêt des services terminé."
 
 # Configuration de l'adresse IP statique
 cat << EOF >> /etc/dhcpcd.conf
-
 interface wlan0
     static ip_address=192.168.4.1/24
     nohook wpa_supplicant
@@ -76,7 +75,7 @@ sysctl -p
 echo "✅ Activation du routage terminé."
 
 # Configuration du pare-feu
-sudo iptables -t nat -A  POSTROUTING -o eth0 -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 echo "✅ Configuration du pare-feu terminée."
 
 # Sauvegarde des règles iptables
