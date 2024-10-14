@@ -42,11 +42,11 @@ systemctl start dnsmasq
 cat << EOF > /etc/hostapd/hostapd.conf
 country_code=FR
 interface=wlan0
-ssid=RaspberryAP
+ssid=TocToc
 channel=7
 auth_algs=1
 wpa=2
-wpa_passphrase=raspberry
+wpa_passphrase=Toc*2=T0Ct0C!
 wpa_key_mgmt=WPA-PSK
 wpa_pairwise=TKIP CCMP
 rsn_pairwise=CCMP
