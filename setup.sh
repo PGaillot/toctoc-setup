@@ -48,6 +48,8 @@ apt install iptables-persistent -y
 check_command "Installation de iptables-persistent"
 apt install dhcpcd5 -y
 check_command "Installation de dhcpcd5"
+apt install lighttpd -y
+check_command "Installation de lighttpd"
 
 # Arrêt des services
 systemctl stop dnsmasq
@@ -108,6 +110,14 @@ check_command "Configuration du pare-feu"
 netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
+# copie de l'application https://github.com/PGaillot/toctoc-conect-frontend
+git clone https://github.com/PGaillot/toctoc-conect-frontend.git
+check_command "Copie de l'application frontend"
+
+mkdir -p /var/www/html/toctoc-conect-frontend
+sudo cp -r toctoc-conect-frontend/dist/browser/ /var/www/html/toctoc-conect-frontend/*
+echo "Configuration de l'application frontend"
+
 echo "🎉 Configuration (presque) terminee !"
 echo "Vous allez perdre la connection wifi. C'est normal !"
 echo "Veuillez patienter le temps que le  le Raspberry Pi termine et redemarre (environ 5 minutes)."
@@ -124,3 +134,4 @@ systemctl unmask hostapd
 systemctl enable hostapd
 systemctl start dnsmasq
 systemctl start hostapd
+systemctl start lighttpd
