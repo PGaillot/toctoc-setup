@@ -111,11 +111,10 @@ check_command "Sauvegarde des règles iptables"
 echo "🎉 Configuration (presque) terminee !"
 echo "Vous allez perdre la connection wifi. C'est normal !"
 echo "Veuillez patienter le temps que le  le Raspberry Pi termine et redemarre (environ 5 minutes)."
-echo "Configuration du point d'accès :"
-echo "SSID: $SSID"
-echo "Mot de passe: $PASSWORD"
+echo "Configuration du point d'accès : TocToc-$ID"
+echo " - SSID: TocToc-$ID"
+echo " - Mot de passe: $PASSWORD"
 echo "Adresse IP statique: 192.168.4.1/24"
-echo "👋"
 
 # Déconnexion du réseau WiFi actuel (si connecté)
 nmcli device disconnect wlan0
@@ -125,4 +124,3 @@ systemctl unmask hostapd
 systemctl enable hostapd
 systemctl start dnsmasq
 systemctl start hostapd
-reboot
