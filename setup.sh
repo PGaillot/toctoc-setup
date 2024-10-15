@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Script de configuration du point d'accès Raspberry Pi
 # Basé sur le tutoriel de raspberrypi-guide.com
 # https://raspberrypi-guide.github.io/networking/create-wireless-access-point
@@ -7,79 +6,91 @@
 # Vérification des privilèges root
 if [[ $EUID -ne 0 ]]; then
    echo "Ce script doit être exécuté en tant que root" 
-   exit 1
+    exit 1
 fi
 
+# Fonction pour vérifier si une commande s'est bien exécutée
+check_command() {
+    if [ $? -ne 0 ]; then
+        echo "❌ Erreur: $1"
+        exit 1
+    else
+        echo "- ☑️ : $1"
+    fi
+}
+
 # Installation des paquets nécessaires
-sudo apt upgrade -y
-sudo apt install dnsmasq hostapd iptables iptables-persistent dhcpcd5
-echo "✅ Installation des paquets nécessaires terminée."
+apt update && apt upgrade -y
+apt install -y dnsmasq hostapd iptables iptables-persistent dhcpcd5
+check_command "Installation des paquets"
 
 # Arrêt des services
-sudo systemctl stop dnsmasq
-sudo systemctl stop hostapd
-echo "✅ Arrêt des services terminé."
+systemctl stop dnsmasq
+systemctl stop hostapd
 
 # Configuration de l'adresse IP statique
-cat << EOF >> /etc/dhcpcd.conf
+cat << EOF > /etc/dhcpcd.conf
 interface wlan0
     static ip_address=192.168.4.1/24
     nohook wpa_supplicant
 EOF
-echo "✅ Configuration de l'adresse IP statique terminée."
+check_command "Configuration de l'adresse IP statique"
 
 # Redémarrage du service dhcpcd
-sudo service dhcpcd restart
-echo "✅ Redémarrage du service dhcpcd terminé."
+systemctl restart dhcpcd
+check_command "Redémarrage de dhcpcd"
 
 # Configuration de dnsmasq
-sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
+mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
 cat << EOF > /etc/dnsmasq.conf
 interface=wlan0
 dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h
 EOF
-echo "✅ Configuration de dnsmasq terminée."
-
-# Démarrage de dnsmasq
-sudo systemctl start dnsmasq
-echo "✅ Démarrage de dnsmasq terminé."
+check_command "Configuration de dnsmasq"
 
 # Configuration de hostapd
 cat << EOF > /etc/hostapd/hostapd.conf
 country_code=FR
 interface=wlan0
 ssid=TocToc
+hw_mode=g
 channel=7
+macaddr_acl=0
 auth_algs=1
+ignore_broadcast_ssid=0
 wpa=2
 wpa_passphrase=Toc*2=T0Ct0C!
 wpa_key_mgmt=WPA-PSK
-wpa_pairwise=TKIP CCMP
+wpa_pairwise=TKIP
 rsn_pairwise=CCMP
 EOF
-echo "✅ Configuration de hostapd terminée."
+check_command "Configuration de hostapd"
 
 # Indication de l'emplacement du fichier de configuration
-sudo sed -i 's/#DAEMON_CONF=""/DAEMON_CONF="\/etc\/hostapd\/hostapd.conf"/' /etc/default/hostapd
-echo "✅ Indication de l'emplacement du fichier de configuration terminée."
-
-# Activation et démarrage de hostapd
-sudo systemctl unmask hostapd
-sudo systemctl enable hostapd
-sudo systemctl start hostapd
-echo "✅ Activation et démarrage de hostapd terminé."
+sed -i 's/#DAEMON_CONF=""/DAEMON_CONF="\/etc\/hostapd\/hostapd.conf"/' /etc/default/hostapd
+check_command "Configuration du daemon hostapd"
 
 # Activation du routage
 sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
 sysctl -p
-echo "✅ Activation du routage terminé."
+check_command "Activation du routage"
 
 # Configuration du pare-feu
-sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-echo "✅ Configuration du pare-feu terminée."
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+check_command "Configuration du pare-feu"
 
 # Sauvegarde des règles iptables
-sudo netfilter-persistent save
-echo "✅ Sauvegarde des régles iptables terminée."
+netfilter-persistent save
+check_command "Sauvegarde des règles iptables"
 
-echo "🎉 Configuration terminée. Redémarrez votre Raspberry Pi pour appliquer les changements."
+# Déconnexion du réseau WiFi actuel (si connecté)
+nmcli device disconnect wlan0
+
+# Démarrage des services
+systemctl unmask hostapd
+systemctl enable hostapd
+systemctl start dnsmasq
+systemctl start hostapd
+reboot
+
+fi
