@@ -115,7 +115,7 @@ git clone https://github.com/PGaillot/toctoc-conect-frontend.git
 check_command "Copie de l'application frontend"
 
 mkdir -p /var/www/html/toctoc-conect-frontend
-sudo cp -r toctoc-conect-frontend/dist/browser/ /var/www/html/toctoc-conect-frontend/*
+sudo cp -r toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/ /var/www/html/toctoc-conect-frontend/*
 echo "Configuration de l'application frontend"
 
 echo "🎉 Configuration (presque) terminee !"
