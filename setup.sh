@@ -36,8 +36,6 @@ check_command() {
 }
 
 # Installation des paquets nécessaires
-apt upgrade -y
-check_command "Mise à jour des paquets"
 apt install dnsmasq -y
 check_command "Installation de dnsmasq"
 apt install hostapd -y
