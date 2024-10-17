@@ -50,16 +50,29 @@ apt install lighttpd -y
 check_command "Installation de lighttpd"
 
 # Installation de python3-venv
-sudo apt install python3-venv
-check_command "Installation de python3-venv"
+if ! dpkg -s python3-venv >/dev/null 2>&1; then
+    sudo apt install python3-venv -y
+    check_command "Installation de python3-venv"
+else
+    echo "- ☑️ : python3-venv est déjà installé."
+fi
 
 # Création de l'environnement virtuel
-python3 -m venv myenv
-check_command "Création de l'environnement virtuel"
+if [ ! -d "myenv" ]; then
+    python3 -m venv myenv
+    check_command "Création de l'environnement virtuel"
+else
+    echo "- ☑️ : L'environnement virtuel 'myenv' existe déjà."
+fi
 
 # Activation de l'environnement virtuel
-source myenv/bin/activate
-check_command "Activation de l'environnement virtuel"
+if [ -d "myenv" ]; then
+    source myenv/bin/activate
+    check_command "Activation de l'environnement virtuel"
+else
+    echo "❌ Erreur: Impossible d'activer l'environnement virtuel car 'myenv' n'existe pas."
+    exit 1
+fi
 
 # Installation de flask
 pip install flask
