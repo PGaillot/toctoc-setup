@@ -35,19 +35,23 @@ check_command() {
     fi
 }
 
+# Fonction pour installer un paquet s'il n'est pas déjà présent
+install_if_needed() {
+    if ! dpkg -l | grep -q $1; then
+        apt install $1 -y
+        check_command "Installation de $1"
+    else
+        echo "- ☑️ : $1 est déjà installé."
+    fi
+}
+
 # Installation des paquets nécessaires
-apt install dnsmasq -y
-check_command "Installation de dnsmasq"
-apt install hostapd -y
-check_command "Installation de hostapd"
-apt install iptables -y
-check_command "Installation de iptables"
-apt install iptables-persistent -y
-check_command "Installation de iptables-persistent"
-apt install dhcpcd5 -y
-check_command "Installation de dhcpcd5"
-apt install lighttpd -y
-check_command "Installation de lighttpd"
+install_if_needed "dnsmasq"
+install_if_needed "hostapd"
+install_if_needed "iptables"
+install_if_needed "iptables-persistent"
+install_if_needed "dhcpcd5"
+install_if_needed "lighttpd"
 
 # Installation de python3-venv
 if ! dpkg -s python3-venv >/dev/null 2>&1; then
@@ -163,7 +167,14 @@ netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
 # copie de l'application https://github.com/PGaillot/toctoc-conect-frontend
-git clone https://github.com/PGaillot/toctoc-conect-frontend.git
+if [ ! -d "/home/toctoc/toctoc-setup/toctoc-conect-frontend" ]; then
+    git clone https://github.com/PGaillot/toctoc-conect-frontend.git
+    check_command "Copie de l'application frontend"
+else
+    echo "- ☑️ : Le dépôt existe déjà, mise à jour du dépôt"
+    cd /home/toctoc/toctoc-setup/toctoc-conect-frontend
+    git pull
+fi
 check_command "Copie de l'application frontend"
 
 sudo cp -r /home/toctoc/toctoc-setup/toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/ /var/www/html/*
