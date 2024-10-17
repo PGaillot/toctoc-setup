@@ -179,7 +179,7 @@ netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
 sudo rm /var/www/html/index.lighttpd.html
-sudo cp -r ~/toctoc-setup/toctoc-conect-frontend/dist/toctoc-conect-frontend/browser* /var/www/html/
+sudo cp -r /home/toctoc/toctoc-setup/toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
 echo "Configuration de l'application frontend"
 
 echo "-----------------------------------------------------------------------------------------"
