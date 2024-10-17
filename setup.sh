@@ -182,17 +182,6 @@ sudo rm /var/www/html/index.lighttpd.html
 sudo cp -r /home/toctoc/toctoc-setup/toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
 echo "Configuration de l'application frontend"
 
-
-# Démarrage des services
-systemctl unmask hostapd
-systemctl enable hostapd
-systemctl start dnsmasq
-systemctl start hostapd
-systemctl start lighttpd
-
-source myenv/bin/activate
-nohup python3 scan_wifi.py > log_scan_wifi.txt 2>&1 &
-
 echo "-----------------------------------------------------------------------------------------"
 echo "----|   🎉 Configuration (presque) terminee !"
 echo "----|   Vous allez perdre la connection wifi. C'est normal !"
@@ -205,3 +194,13 @@ echo "--------------------------------------------------------------------------
 
 # Déconnexion du réseau WiFi actuel (si connecté)
 nmcli device disconnect wlan0
+
+# Démarrage des services
+systemctl unmask hostapd
+systemctl enable hostapd
+systemctl start dnsmasq
+systemctl start hostapd
+systemctl start lighttpd
+
+source myenv/bin/activate
+nohup python3 scan_wifi.py > log_scan_wifi.txt 2>&1 &
