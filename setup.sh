@@ -49,29 +49,59 @@ check_command "Installation de dhcpcd5"
 apt install lighttpd -y
 check_command "Installation de lighttpd"
 
+# Installation de python3-venv
+sudo apt install python3-venv
+check_command "Installation de python3-venv"
+
+# Création de l'environnement virtuel
+python3 -m venv myenv
+
+# Activation de l'environnement virtuel
+source myenv/bin/activate
+
+# Installation de flask
+pip install flask
+deactivate
+
 # Arrêt des services
 systemctl stop dnsmasq
 systemctl stop hostapd
 
 # Configuration de l'adresse IP statique
-cat <<EOF >/etc/dhcpcd.conf
+if grep -q "static ip_address=192.168.4.1/24" /etc/dhcpcd.conf; then
+    echo "- ✔️ : L'adresse IP statique est déjà configurée."
+else
+    cat <<EOF >/etc/dhcpcd.conf
+
 interface wlan0
     static ip_address=192.168.4.1/24
     nohook wpa_supplicant
 EOF
-check_command "Configuration de l'adresse IP statique"
+    check_command "Configuration de l'adresse IP statique"
+fi
 
 # Redémarrage du service dhcpcd
 systemctl restart dhcpcd
 check_command "Redémarrage de dhcpcd"
 
-# Configuration de dnsmasq
-mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
-cat <<EOF >/etc/dnsmasq.conf
+# Sauvegarde et configuration de dnsmasq
+if [ ! -f "/etc/dnsmasq.conf.orig" ]; then
+    mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
+    check_command "Sauvegarde du fichier de configuration original de dnsmasq"
+else
+    echo "- ✔️ : Le fichier de configuration original de dnsmasq a déjà été sauvegardé."
+fi
+
+# Vérification avant d'écrire la configuration
+if grep -q "dhcp-range=192.168.4.2,192.168.4.20" /etc/dnsmasq.conf; then
+    echo "- ✔️ : La configuration de dnsmasq est déjà présente."
+else
+    cat <<EOF >/etc/dnsmasq.conf
 interface=wlan0
 dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h
 EOF
-check_command "Configuration de dnsmasq"
+    check_command "Configuration de dnsmasq"
+fi
 
 # Configuration de hostapd
 cat <<EOF >/etc/hostapd/hostapd.conf
@@ -91,14 +121,22 @@ rsn_pairwise=CCMP
 EOF
 check_command "Configuration de hostapd"
 
-# Indication de l'emplacement du fichier de configuration
-sed -i 's/#DAEMON_CONF=""/DAEMON_CONF="\/etc\/hostapd\/hostapd.conf"/' /etc/default/hostapd
-check_command "Configuration du daemon hostapd"
+# Vérification de la configuration du daemon hostapd
+if grep -q '^DAEMON_CONF="/etc/hostapd/hostapd.conf"' /etc/default/hostapd; then
+    echo "- ✔️ : La configuration du daemon hostapd est déjà présente."
+else
+    sed -i 's/#DAEMON_CONF=""/DAEMON_CONF="\/etc\/hostapd\/hostapd.conf"/' /etc/default/hostapd
+    check_command "Configuration du daemon hostapd"
+fi
 
-# Activation du routage
-sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
-sysctl -p
-check_command "Activation du routage"
+# Activation du routage IP
+if grep -q '^net.ipv4.ip_forward=1' /etc/sysctl.conf; then
+    echo "- ✔️ : Le routage IP est déjà activé."
+else
+    sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+    sysctl -p
+    check_command "Activation du routage"
+fi
 
 # Configuration du pare-feu
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
@@ -112,8 +150,7 @@ check_command "Sauvegarde des règles iptables"
 git clone https://github.com/PGaillot/toctoc-conect-frontend.git
 check_command "Copie de l'application frontend"
 
-mkdir -p /var/www/html/toctoc-conect-frontend
-sudo cp -r toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/ /var/www/html/toctoc-conect-frontend/*
+sudo cp -r /home/toctoc/TocToc-Setup/toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/ /var/www/html/*
 echo "Configuration de l'application frontend"
 
 echo "🎉 Configuration (presque) terminee !"
@@ -133,3 +170,6 @@ systemctl enable hostapd
 systemctl start dnsmasq
 systemctl start hostapd
 systemctl start lighttpd
+
+source myenv/bin/activate
+python3 scan_wifi.py
