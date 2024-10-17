@@ -150,16 +150,18 @@ check_command "Sauvegarde des règles iptables"
 git clone https://github.com/PGaillot/toctoc-conect-frontend.git
 check_command "Copie de l'application frontend"
 
-sudo cp -r /home/toctoc/TocToc-Setup/toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/ /var/www/html/*
+sudo cp -r /home/toctoc/toctoc-setup/toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/ /var/www/html/*
 echo "Configuration de l'application frontend"
 
-echo "🎉 Configuration (presque) terminee !"
-echo "Vous allez perdre la connection wifi. C'est normal !"
-echo "Veuillez patienter le temps que le  le Raspberry Pi termine et redemarre (environ 5 minutes)."
-echo "Configuration du point d'accès : TocToc-$ID"
-echo " - SSID: TocToc-$ID"
-echo " - Mot de passe: $PASSWORD"
-echo "Adresse IP statique: 192.168.4.1/24"
+echo "-----------------------------------------------------------------------------------------"
+echo "----|   🎉 Configuration (presque) terminee !"
+echo "----|   Vous allez perdre la connection wifi. C'est normal !"
+echo "----|   Veuillez patienter le temps que le  le Raspberry Pi termine et redemarre (environ 5 minutes)."
+echo "----|   Configuration du point d'accès : TocToc-$ID"
+echo "----|   - SSID: TocToc-$ID"
+echo "----|   - Mot de passe: $PASSWORD"
+echo "----|   Adresse IP statique: 192.168.4.1/24"
+echo "-----------------------------------------------------------------------------------------"
 
 # Déconnexion du réseau WiFi actuel (si connecté)
 nmcli device disconnect wlan0
@@ -172,4 +174,4 @@ systemctl start hostapd
 systemctl start lighttpd
 
 source myenv/bin/activate
-python3 scan_wifi.py
+nohup python3 /chemin/vers/ton/script/scan_wifi.py > log_scan_wifi.txt 2>&1 &
