@@ -11,6 +11,6 @@ def request_network(ssid, password):
 
 @app.route('/request', methods=['POST'])
 def request():
-    ssid = request.form.get('ssid')
-    password = request.form.get('password')
+    ssid = request.args.get('ssid')
+    password = request.args.get('password')
     return request_network(ssid, password)

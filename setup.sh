@@ -55,13 +55,16 @@ check_command "Installation de python3-venv"
 
 # Création de l'environnement virtuel
 python3 -m venv myenv
+check_command "Création de l'environnement virtuel"
 
 # Activation de l'environnement virtuel
 source myenv/bin/activate
+check_command "Activation de l'environnement virtuel"
 
 # Installation de flask
 pip install flask
 deactivate
+check_command "Installation de flask & desactivation de l'environnement virtuel"
 
 # Arrêt des services
 systemctl stop dnsmasq
