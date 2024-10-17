@@ -53,6 +53,18 @@ install_if_needed "iptables-persistent"
 install_if_needed "dhcpcd5"
 install_if_needed "lighttpd"
 
+# copie de l'application https://github.com/PGaillot/toctoc-conect-frontend
+if [ ! -d "/home/toctoc/toctoc-setup/toctoc-conect-frontend" ]; then
+    git clone https://github.com/PGaillot/toctoc-conect-frontend.git
+    check_command "Copie de l'application frontend"
+else
+    echo "- ☑️ : Le dépôt existe déjà, mise à jour du dépôt"
+    cd /home/toctoc/toctoc-setup/toctoc-conect-frontend
+    git pull
+    cd ../
+fi
+check_command "Copie de l'application frontend"
+
 # Installation de python3-venv
 if ! dpkg -s python3-venv >/dev/null 2>&1; then
     sudo apt install python3-venv -y
@@ -166,19 +178,20 @@ check_command "Configuration du pare-feu"
 netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
-# copie de l'application https://github.com/PGaillot/toctoc-conect-frontend
-if [ ! -d "/home/toctoc/toctoc-setup/toctoc-conect-frontend" ]; then
-    git clone https://github.com/PGaillot/toctoc-conect-frontend.git
-    check_command "Copie de l'application frontend"
-else
-    echo "- ☑️ : Le dépôt existe déjà, mise à jour du dépôt"
-    cd /home/toctoc/toctoc-setup/toctoc-conect-frontend
-    git pull
-fi
-check_command "Copie de l'application frontend"
-
-sudo cp -r /home/toctoc/toctoc-setup/toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/ /var/www/html/*
+sudo rm /var/www/html/index.lighttpd.html
+sudo cp -r /home/toctoc/toctoc-setup/toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
 echo "Configuration de l'application frontend"
+
+
+# Démarrage des services
+systemctl unmask hostapd
+systemctl enable hostapd
+systemctl start dnsmasq
+systemctl start hostapd
+systemctl start lighttpd
+
+source myenv/bin/activate
+nohup python3 scan_wifi.py > log_scan_wifi.txt 2>&1 &
 
 echo "-----------------------------------------------------------------------------------------"
 echo "----|   🎉 Configuration (presque) terminee !"
@@ -192,13 +205,3 @@ echo "--------------------------------------------------------------------------
 
 # Déconnexion du réseau WiFi actuel (si connecté)
 nmcli device disconnect wlan0
-
-# Démarrage des services
-systemctl unmask hostapd
-systemctl enable hostapd
-systemctl start dnsmasq
-systemctl start hostapd
-systemctl start lighttpd
-
-source myenv/bin/activate
-nohup python3 scan_wifi.py > log_scan_wifi.txt 2>&1 &
