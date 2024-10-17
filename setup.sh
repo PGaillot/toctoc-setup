@@ -177,4 +177,4 @@ systemctl start hostapd
 systemctl start lighttpd
 
 source myenv/bin/activate
-nohup python3 /chemin/vers/ton/script/scan_wifi.py > log_scan_wifi.txt 2>&1 &
+nohup python3 scan_wifi.py > log_scan_wifi.txt 2>&1 &
