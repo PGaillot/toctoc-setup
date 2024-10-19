@@ -45,17 +45,9 @@ install_if_needed() {
     fi
 }
 
-echo "Vérification de dnsmasq :"
-dpkg -l | grep dnsmasq
-
-if ! dpkg -l | grep -q dnsmasq; then
-    apt install dnsmasq -y
-    check_command "Installation de dnsmasq"
-else
-    echo "- ☑️ : dnsmasq est déjà installé."
-fi
-
 # Installation des paquets nécessaires
+# install_if_needed "dnsmasq"
+apt install dnsmasq -y
 install_if_needed "hostapd"
 install_if_needed "iptables"
 install_if_needed "iptables-persistent"
