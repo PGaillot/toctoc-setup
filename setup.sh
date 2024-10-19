@@ -195,7 +195,7 @@ echo "--------------------------------------------------------------------------
 
 chmod +x /home/toctoc/toctoc-setup/control_led.py
 echo "Allumage de la LED pour indiquer que le Wi-Fi est prêt. (TEST)"
-python3 /home/toctoc/control_led.py
+python3 /home/toctoc/toctoc-setup/control_led.py
 
 # Déconnexion du réseau WiFi actuel (si connecté)
 nmcli device disconnect wlan0
