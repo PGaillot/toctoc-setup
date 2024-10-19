@@ -23,9 +23,9 @@ def cleanup():
 if __name__ == "__main__":
     setup()
     if len(sys.argv) > 1 and sys.argv[1] == "on":
-        allumer_led()
+        start_led()
     elif len(sys.argv) > 1 and sys.argv[1] == "off":
-        eteindre_led()
+        shutdown_led()
     else:
         print("Usage: python3 control_led.py [on|off]")
     cleanup()
