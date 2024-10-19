@@ -62,38 +62,9 @@ else
     cd /home/toctoc/toctoc-setup/toctoc-conect-frontend
     git pull
     cd ../
-fi
-check_command "Copie de l'application frontend"
-
-# Installation de python3-venv
-if ! dpkg -s python3-venv >/dev/null 2>&1; then
-    sudo apt install python3-venv -y
-    check_command "Installation de python3-venv"
-else
-    echo "- ☑️ : python3-venv est déjà installé."
+    check_command "Copie de l'application frontend"
 fi
 
-# Création de l'environnement virtuel
-if [ ! -d "myenv" ]; then
-    python3 -m venv myenv
-    check_command "Création de l'environnement virtuel"
-else
-    echo "- ☑️ : L'environnement virtuel 'myenv' existe déjà."
-fi
-
-# Activation de l'environnement virtuel
-if [ -d "myenv" ]; then
-    source myenv/bin/activate
-    check_command "Activation de l'environnement virtuel"
-else
-    echo "❌ Erreur: Impossible d'activer l'environnement virtuel car 'myenv' n'existe pas."
-    exit 1
-fi
-
-# Installation de flask
-pip install flask
-deactivate
-check_command "Installation de flask & desactivation de l'environnement virtuel"
 
 # Arrêt des services
 systemctl stop dnsmasq
@@ -201,6 +172,3 @@ systemctl enable hostapd
 systemctl start dnsmasq
 systemctl start hostapd
 systemctl start lighttpd
-
-source myenv/bin/activate
-nohup python3 scan_wifi.py > log_scan_wifi.txt 2>&1 &
