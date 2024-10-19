@@ -192,6 +192,10 @@ echo "----|   - Mot de passe: $PASSWORD"
 echo "----|   Adresse IP statique: 192.168.4.1/24"
 echo "-----------------------------------------------------------------------------------------"
 
+chmod +x /home/toctoc/control_led.py
+echo "Allumage de la LED pour indiquer que le Wi-Fi est prêt. (TEST)"
+python3 /home/toctoc/control_led.py
+
 # Déconnexion du réseau WiFi actuel (si connecté)
 nmcli device disconnect wlan0
 
@@ -204,3 +208,5 @@ systemctl start lighttpd
 
 source myenv/bin/activate
 nohup python3 scan_wifi.py > log_scan_wifi.txt 2>&1 &
+
+
