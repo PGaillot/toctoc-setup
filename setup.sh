@@ -48,6 +48,8 @@ apt install iptables-persistent -y
 check_command "Installation de iptables-persistent"
 apt install dhcpcd5 -y
 check_command "Installation de dhcpcd5"
+pip3 install RPi.GPIO
+check_command "Installation de dhcpcd5"
 
 # Arrêt des services
 systemctl stop dnsmasq
@@ -117,7 +119,7 @@ echo " - Mot de passe: $PASSWORD"
 echo "Adresse IP statique: 192.168.4.1/24"
 
 # Déconnexion du réseau WiFi actuel (si connecté)
-nmcli device disconnect wlan0
+# nmcli device disconnect wlan0
 
 # Démarrage des services
 systemctl unmask hostapd
