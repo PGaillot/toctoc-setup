@@ -1,6 +1,8 @@
 #!/bin/bash
 # Script de désinstallation du point d'accès Raspberry Pi
 
+python3 /home/toctoc/toctoc-setup/led_control.py
+
 # Vérification des privilèges root
 if [[ $EUID -ne 0 ]]; then
     echo "Ce script doit être exécuté en tant que root"
