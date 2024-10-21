@@ -3,7 +3,7 @@ from gpiozero import Button
 import subprocess
 from signal import pause
 
-button = Button(21, hold_time=3)
+button = Button(27, hold_time=3)
 
 def button_held():
     print("Bouton maintenu pendant 3 secondes ! Exécution du script...")
