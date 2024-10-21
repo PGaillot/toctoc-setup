@@ -43,7 +43,7 @@ apt install python3-gpiozero
 
 cat <<EOF >/etc/systemd/system/reset_trigger.service
 [Unit]
-Description=Service pour gérer la détection du bouton et les LEDs
+Description=Service pour gérer la détection du bouton reset.
 After=multi-user.target
 
 [Service]

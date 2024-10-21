@@ -6,7 +6,7 @@ from signal import pause
 button = Button(27, hold_time=3)
 
 def button_held():
-    print("Bouton maintenu pendant 3 secondes ! Exécution du script...")
+    print("Bouton maintenu pendant 3 secondes ! Exécution du script de reset...")
     subprocess.run(["/bin/bash", "/home/toctoc/toctoc-setup/reset.sh"])
 
 button.when_held = button_held
