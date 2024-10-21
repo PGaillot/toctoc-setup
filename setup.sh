@@ -56,8 +56,6 @@ apt install iptables-persistent -y
 check_command "Installation de iptables-persistent"
 apt install dhcpcd5 -y
 check_command "Installation de dhcpcd5"
-pip3 install RPi.GPIO
-check_command "Installation de dhcpcd5"
 
 # Arrêt des services
 systemctl stop dnsmasq
