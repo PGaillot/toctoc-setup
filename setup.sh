@@ -3,10 +3,24 @@
 # Basé sur le tutoriel de raspberrypi-guide.com
 # https://raspberrypi-guide.github.io/networking/create-wireless-access-point
 
+
+LED_SCRIPT="/home/toctoc/toctoc-setup/led_control.py"
+
+# Fonction pour contrôler la LED
+led_control() {
+    python3 $LED_SCRIPT "$1"
+}
+
+# Nettoyage de la LED à la sortie du script
+trap 'led_control off' EXIT
+
+led_control start
+
 # Vérification des privilèges root
 if [[ $EUID -ne 0 ]]; then
     echo "Ce script doit être exécuté en tant que root"
     exit 1
+    led_control error
 fi
 
 # Valeurs par défaut
@@ -154,3 +168,4 @@ systemctl enable hostapd
 systemctl start dnsmasq
 systemctl start hostapd
 systemctl status reset_trigger.service
+led_control success

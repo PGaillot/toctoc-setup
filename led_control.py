@@ -3,50 +3,72 @@ import threading
 import time
 from gpiozero import LED
 
-led = LED(17)
-led_state = None
-current_thread = None
+class LEDControl:
+    def __init__(self):
+        self.led = LED(17)
+        self.current_thread = None
 
-def cancel_previous_effect():
-    global current_thread
-    if current_thread and current_thread.is_alive():
-        current_thread.do_run = False
-        current_thread.join()  # Attendre que le thread actuel se termine
+    def stop_current_pattern(self):
+        """Arrête le pattern LED actuel s'il existe"""
+        if self.current_thread and self.current_thread.is_alive():
+            self.current_thread.do_run = False
+            self.current_thread.join()
+            
+    def installation_start(self):
+        """LED clignote rapidement - début du script"""
+        self.stop_current_pattern()
+        
+        def pattern():
+            thread = threading.currentThread()
+            while getattr(thread, "do_run", True):
+                self.led.on()
+                time.sleep(0.2)
+                self.led.off()
+                time.sleep(0.2)
+                
+        self.current_thread = threading.Thread(target=pattern)
+        self.current_thread.start()
+        
+    def error(self):
+        """LED clignote lentement - une erreur est survenue"""
+        self.stop_current_pattern()
+        
+        def pattern():
+            thread = threading.currentThread()
+            while getattr(thread, "do_run", True):
+                self.led.on()
+                time.sleep(1)
+                self.led.off()
+                time.sleep(1)
+                
+        self.current_thread = threading.Thread(target=pattern)
+        self.current_thread.start()
+        
+    def success(self):
+        """LED reste allumée - tout s'est bien passé"""
+        self.stop_current_pattern()
+        self.led.on()
+        
+    def cleanup(self):
+        """Éteint la LED et nettoie"""
+        self.stop_current_pattern()
+        self.led.off()
 
-def set_fixed_light():
-    global led_state
-    cancel_previous_effect()
-    led_state = "fixed"
-    led.on()
-
-def set_blinking_light():
-    global led_state, current_thread
-    cancel_previous_effect()
-    led_state = "blinking"
+if __name__ == "__main__":
+    import sys
     
-    def blinking():
-        t = threading.currentThread()
-        while getattr(t, "do_run", True):
-            led.on()
-            time.sleep(1)
-            led.off()
-            time.sleep(1)
+    if len(sys.argv) != 2:
+        print("Usage: python3 led_control.py [start|error|success|off]")
+        sys.exit(1)
+        
+    led = LEDControl()
     
-    current_thread = threading.Thread(target=blinking)
-    current_thread.start()
-
-def set_fast_blinking_light():
-    global led_state, current_thread
-    cancel_previous_effect()
-    led_state = "fast_blinking"
-    
-    def fast_blinking():
-        t = threading.currentThread()
-        while getattr(t, "do_run", True):
-            led.on()
-            time.sleep(0.2)
-            led.off()
-            time.sleep(0.2)
-    
-    current_thread = threading.Thread(target=fast_blinking)
-    current_thread.start()
+    command = sys.argv[1]
+    if command == "start":
+        led.installation_start()
+    elif command == "error":
+        led.error()
+    elif command == "success":
+        led.success()
+    elif command == "off":
+        led.cleanup()

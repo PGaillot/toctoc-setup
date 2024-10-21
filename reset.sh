@@ -2,11 +2,14 @@
 # Script de désinstallation du point d'accès Raspberry Pi
 
 LED_SCRIPT="/home/toctoc/toctoc-setup/led_control.py"
+
 # Fonction pour contrôler la LED
-control_led() {
+led_control() {
     python3 $LED_SCRIPT "$1"
 }
 
+# Nettoyage de la LED à la sortie du script
+trap 'led_control off' EXIT
 
 # Vérification des privilèges root
 if [[ $EUID -ne 0 ]]; then
@@ -18,6 +21,7 @@ fi
 check_command() {
     if [ $? -ne 0 ]; then
         echo "❌ Erreur: $1"
+        led_control error
         exit 1
     else
         echo "- ☑️ : $1"
@@ -79,6 +83,6 @@ systemctl disable dnsmasq
 check_command "Désactivation des services"
 
 
-control_led "fixed"
+led_control success
 
 echo "🎉 Désinstallation terminée. Le Raspberry Pi est revenu à son état d'origine."
