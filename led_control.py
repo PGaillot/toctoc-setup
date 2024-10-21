@@ -19,7 +19,7 @@ class LEDControl:
         self.stop_current_pattern()
         
         def pattern():
-            thread = threading.currentThread()
+            thread = threading.current_thread()
             while getattr(thread, "do_run", True):
                 self.led.on()
                 time.sleep(0.2)
@@ -34,7 +34,7 @@ class LEDControl:
         self.stop_current_pattern()
         
         def pattern():
-            thread = threading.currentThread()
+            thread = threading.current_thread()
             while getattr(thread, "do_run", True):
                 self.led.on()
                 time.sleep(1)
