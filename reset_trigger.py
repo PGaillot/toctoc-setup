@@ -11,6 +11,5 @@ def button_held():
 
 button.when_held = button_held
 
-
 print("Attente de l'appui long sur le bouton (3s) pour reset...")
 pause()

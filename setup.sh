@@ -40,9 +40,30 @@ check_command() {
 
 check_command "intallation de python"
 apt install python3-gpiozero
+
+cat <<EOF >/etc/systemd/system/reset_trigger.service
+[Unit]
+Description=Service pour gérer la détection du bouton et les LEDs
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/toctoc/toctoc-setup/reset_trigger.py
+WorkingDirectory=/home/toctoc/toctoc-setup/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl start reset_trigger.service
+systemctl enable reset_trigger.service
+check_command "Configuration du service trigger_reset"
 echo "Démarrage du service de détection du bouton..."
-/usr/bin/python3 /home/toctoc/toctoc-setup/reset_trigger.py &
-echo "Le script de détection du bouton est lancé en arrière-plan."
+
 
 
 check_command "Mise à jour des paquets"
@@ -132,3 +153,4 @@ systemctl unmask hostapd
 systemctl enable hostapd
 systemctl start dnsmasq
 systemctl start hostapd
+systemctl status reset_trigger.service

@@ -8,12 +8,10 @@ led = LED(21)
 try:
     while True:
         # Allumer la LED
-        print("LED allumée")
         led.on()
         time.sleep(1)  # Attendre 1 seconde
         
         # Éteindre la LED
-        print("LED éteinte")
         led.off()
         time.sleep(1)  # Attendre 1 seconde
 
