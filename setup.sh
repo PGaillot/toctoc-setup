@@ -36,7 +36,15 @@ check_command() {
 }
 
 # Installation des paquets nécessaires
-apt upgrade -y
+# apt upgrade -y
+
+check_command "intallation de python"
+apt install python3-gpiozero
+echo "Démarrage du service de détection du bouton..."
+/usr/bin/python3 /home/toctoc/toctoc-setup/reset_trigger.py &
+echo "Le script de détection du bouton est lancé en arrière-plan."
+
+
 check_command "Mise à jour des paquets"
 apt install dnsmasq -y
 check_command "Installation de dnsmasq"
@@ -117,7 +125,7 @@ echo " - Mot de passe: $PASSWORD"
 echo "Adresse IP statique: 192.168.4.1/24"
 
 # Déconnexion du réseau WiFi actuel (si connecté)
-nmcli device disconnect wlan0
+# nmcli device disconnect wlan0
 
 # Démarrage des services
 systemctl unmask hostapd
