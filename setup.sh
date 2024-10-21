@@ -52,7 +52,7 @@ WorkingDirectory=/home/toctoc/toctoc-setup/
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
-User=root
+User=toctoc
 
 [Install]
 WantedBy=multi-user.target
