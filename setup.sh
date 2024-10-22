@@ -66,8 +66,8 @@ check_command "Configuration du service trigger_reset"
 echo "Démarrage du service de détection du bouton..."
 
 
-
-check_command "Mise à jour des paquets"
+apt install python3-flask -y
+check_command "Installation de Flask"
 apt install dnsmasq -y
 check_command "Installation de dnsmasq"
 apt install hostapd -y
@@ -78,6 +78,29 @@ apt install iptables-persistent -y
 check_command "Installation de iptables-persistent"
 apt install dhcpcd5 -y
 check_command "Installation de dhcpcd5"
+
+# Création du service flask
+cat <<EOF >/etc/systemd/system/flask_app.service
+[Unit]
+Description=Service pour l'application Flask
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/toctoc/toctoc-setup/app.py
+WorkingDirectory=/home/toctoc/toctoc-setup/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=toctoc
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl start flask_app.service
+systemctl enable flask_app.service
+check_command "Démarrage du service Flask"
 
 # Arrêt des services
 systemctl stop dnsmasq
