@@ -3,7 +3,7 @@
 
 led_control="/home/toctoc/toctoc-setup/led_control.py"
 
-python3 led_control warning
+python3 "$led_control" warning
 
 # Vérification des privilèges root
 if [[ $EUID -ne 0 ]]; then
@@ -74,5 +74,5 @@ systemctl mask hostapd
 systemctl disable dnsmasq
 check_command "Désactivation des services"
 
-python3 led_control success
+python3 "$led_control" success
 echo "🎉 Désinstallation terminée. Le Raspberry Pi est revenu à son état d'origine."

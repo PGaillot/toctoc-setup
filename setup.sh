@@ -6,6 +6,7 @@
 # Fonction pour vérifier si une commande s'est bien exécutée
 
 led_control="/home/toctoc/toctoc-setup/led_control.py"
+python3 "$led_control" warning
 
 check_command() {
     if [ $? -ne 0 ]; then
@@ -42,7 +43,7 @@ done
 sudo apt-get install python3-rpi.gpio
 
 
-python3 led_control warning
+python3 "$led_control" warning
 
 cat <<EOF >/etc/systemd/system/reset_trigger.service
 [Unit]
@@ -157,4 +158,4 @@ systemctl enable hostapd
 systemctl start dnsmasq
 systemctl start hostapd
 systemctl status reset_trigger.service
-python3 led_control success
+python3 "$led_control" success
