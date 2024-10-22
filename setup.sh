@@ -11,6 +11,7 @@ python3 "$led_control" warning
 check_command() {
     if [ $? -ne 0 ]; then
         echo "❌ Erreur: $1"
+        python3 "$led_control" error
         exit 1
     else
         echo "- ☑️ : $1"
@@ -153,8 +154,8 @@ echo "Adresse IP statique: 192.168.4.1/24"
 # nmcli device disconnect wlan0
 
 # Démarrage des services
-systemctl unmask hostapd
-systemctl enable hostapd
-systemctl start dnsmasq
-systemctl start hostapd
+# systemctl unmask hostapd
+# systemctl enable hostapd
+# systemctl start dnsmasq
+# systemctl start hostapd
 python3 "$led_control" success
