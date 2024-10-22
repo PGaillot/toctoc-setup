@@ -43,6 +43,5 @@ if __name__ == "__main__":
 
     status = sys.argv[1]
     exit_code = led_status(status)
-    time.sleep(2)
-    GPIO.cleanup()  # Nettoyer les ports GPIO avant de quitter
+    
     sys.exit(exit_code)
