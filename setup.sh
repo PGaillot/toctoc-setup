@@ -3,24 +3,23 @@
 # Basé sur le tutoriel de raspberrypi-guide.com
 # https://raspberrypi-guide.github.io/networking/create-wireless-access-point
 
+# Fonction pour vérifier si une commande s'est bien exécutée
 
-LED_SCRIPT="/home/toctoc/toctoc-setup/led_control.py"
+led_control="/home/toctoc/toctoc-setup/led_control.py"
 
-# Fonction pour contrôler la LED
-led_control() {
-    python3 $LED_SCRIPT "$1"
+check_command() {
+    if [ $? -ne 0 ]; then
+        echo "❌ Erreur: $1"
+        exit 1
+    else
+        echo "- ☑️ : $1"
+    fi
 }
-
-# Nettoyage de la LED à la sortie du script
-trap 'led_control off' EXIT
-
-led_control start
 
 # Vérification des privilèges root
 if [[ $EUID -ne 0 ]]; then
     echo "Ce script doit être exécuté en tant que root"
     exit 1
-    led_control error
 fi
 
 # Valeurs par défaut
@@ -39,21 +38,11 @@ while getopts "i:p" opt; do
     esac
 done
 
-# Fonction pour vérifier si une commande s'est bien exécutée
-check_command() {
-    if [ $? -ne 0 ]; then
-        echo "❌ Erreur: $1"
-        exit 1
-    else
-        echo "- ☑️ : $1"
-    fi
-}
-
 # Installation des paquets nécessaires
-# apt upgrade -y
+sudo apt-get install python3-rpi.gpio
 
-check_command "intallation de python"
-apt install python3-gpiozero
+
+python3 led_control warning
 
 cat <<EOF >/etc/systemd/system/reset_trigger.service
 [Unit]
@@ -168,4 +157,4 @@ systemctl enable hostapd
 systemctl start dnsmasq
 systemctl start hostapd
 systemctl status reset_trigger.service
-led_control success
+python3 led_control success
