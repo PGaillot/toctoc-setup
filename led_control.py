@@ -9,6 +9,7 @@ LED_ROUGE = 26  # Erreur
 
 # Initialiser les ports GPIO
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 GPIO.setup(LED_VERTE, GPIO.OUT)
 GPIO.setup(LED_ORANGE, GPIO.OUT)
 GPIO.setup(LED_ROUGE, GPIO.OUT)

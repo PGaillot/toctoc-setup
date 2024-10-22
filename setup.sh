@@ -157,5 +157,4 @@ systemctl unmask hostapd
 systemctl enable hostapd
 systemctl start dnsmasq
 systemctl start hostapd
-systemctl status reset_trigger.service
 python3 "$led_control" success
