@@ -4,8 +4,8 @@
 # https://raspberrypi-guide.github.io/networking/create-wireless-access-point
 
 # Fonction pour vérifier si une commande s'est bien exécutée
-
 led_control="/home/toctoc/toctoc-setup/led_control.py"
+sudo apt-get install python3-rpi.gpio
 python3 "$led_control" warning
 
 check_command() {
@@ -39,10 +39,6 @@ while getopts "i:p" opt; do
         ;;
     esac
 done
-
-# Installation des paquets nécessaires
-sudo apt-get install python3-rpi.gpio
-
 
 python3 "$led_control" warning
 
@@ -151,11 +147,11 @@ echo " - Mot de passe: $PASSWORD"
 echo "Adresse IP statique: 192.168.4.1/24"
 
 # Déconnexion du réseau WiFi actuel (si connecté)
-# nmcli device disconnect wlan0
+nmcli device disconnect wlan0
 
 # Démarrage des services
-# systemctl unmask hostapd
-# systemctl enable hostapd
-# systemctl start dnsmasq
-# systemctl start hostapd
+systemctl unmask hostapd
+systemctl enable hostapd
+systemctl start dnsmasq
+systemctl start hostapd
 python3 "$led_control" success
