@@ -154,7 +154,9 @@ sysctl -p
 check_command "Activation du routage"
 
 # Configuration du pare-feu
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
 check_command "Configuration du pare-feu"
 
 # Sauvegarde des règles iptables
