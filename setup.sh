@@ -138,9 +138,10 @@ check_command "Configuration du pare-feu"
 netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
-echo "🎉 Configuration (presque) terminee !"
-echo "Vous allez perdre la connection wifi. C'est normal !"
-echo "Veuillez patienter le temps que le  le Raspberry Pi termine et redemarre (environ 5 minutes)."
+echo "-- 🎉 Configuration (presque) terminee ! 🎉 --"
+echo "Vous allez perdre la connection wifi. Pas de panique, c'est normal !"
+echo "Veuillez patienter le temps que le  le Raspberry Pi termine (environ 2 minutes)."
+echo "---"
 echo "Configuration du point d'accès : TocToc-$ID"
 echo " - SSID: TocToc-$ID"
 echo " - Mot de passe: $PASSWORD"
