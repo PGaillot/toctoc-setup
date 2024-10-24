@@ -135,7 +135,7 @@ netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
 git clone https://github.com/PGaillot/toctoc-conect-frontend.git
-cp -r toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
+cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
 check_command "Copie du front-end"
 
 echo "-- 🎉 Configuration (presque) terminee ! 🎉 --"
