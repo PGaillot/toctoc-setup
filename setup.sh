@@ -168,6 +168,7 @@ server.modules = (
     "mod_alias",
     "mod_compress",
     "mod_redirect",
+    "mod_mime"
 )
 server.document-root = "/var/www/html"
 index-file.names = ( "index.html" )
