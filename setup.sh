@@ -136,14 +136,14 @@ check_command "Sauvegarde des règles iptables"
 
 echo "-- 🎉 Configuration (presque) terminee ! 🎉 --"
 echo "Vous allez perdre la connection wifi. Pas de panique, c'est normal !"
-echo "Veuillez patienter le temps que le  le Raspberry Pi termine (environ 2 minutes)."
+echo "Veuillez patienter le temps que le Raspberry Pi termine (environ 2 minutes)."
 echo "---"
 echo "Configuration du point d'accès : TocToc-$ID"
 echo " - SSID: TocToc-$ID"
 echo " - Mot de passe: $PASSWORD"
 echo "Adresse IP statique: 192.168.4.1/24"
 
-# Déconnexion du réseau WiFi actuel (si connecté)
+# Déconnexion du réseau WiFi actuel
 nmcli device disconnect wlan0
 
 # Démarrage des services
@@ -151,4 +151,36 @@ systemctl unmask hostapd
 systemctl enable hostapd
 systemctl start dnsmasq
 systemctl start hostapd
+check_command "Démarrage des services WiFi"
+
+# --- Installation de Lighttpd ---
+apt install lighttpd -y
+check_command "Installation de Lighttpd"
+
+# Configuration de Lighttpd pour utiliser l'adresse IP statique
+cat <<EOF >/etc/lighttpd/lighttpd.conf
+server.modules = (
+    "mod_access",
+    "mod_alias",
+    "mod_compress",
+    "mod_redirect",
+)
+server.document-root = "/var/www/html"
+server.port = 80
+server.bind = "192.168.4.1"
+server.errorlog = "/var/log/lighttpd/error.log"
+server.pid-file = "/var/run/lighttpd.pid"
+server.username = "www-data"
+server.groupname = "www-data"
+EOF
+check_command "Configuration de Lighttpd"
+
+# Redémarrage et activation de Lighttpd
+systemctl restart lighttpd
+systemctl enable lighttpd
+check_command "Démarrage de Lighttpd"
+
 python3 "$led_control" success
+
+echo "Lighttpd est installé et configuré."
+echo "Vous pouvez vous connecter au Raspberry Pi via Wi-Fi et accéder au site web via l'adresse http://192.168.4.1"
