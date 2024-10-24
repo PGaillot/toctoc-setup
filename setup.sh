@@ -170,6 +170,7 @@ server.modules = (
     "mod_redirect",
 )
 server.document-root = "/var/www/html"
+index-file.names = ( "index.html" )
 server.port = 80
 server.bind = "192.168.4.1"
 server.errorlog = "/var/log/lighttpd/error.log"
