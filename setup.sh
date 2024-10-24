@@ -40,8 +40,6 @@ while getopts "i:p" opt; do
     esac
 done
 
-python3 "$led_control" warning
-
 cat <<EOF >/etc/systemd/system/reset_trigger.service
 [Unit]
 Description=Service pour gérer la détection du bouton reset.
@@ -64,8 +62,6 @@ systemctl start reset_trigger.service
 systemctl enable reset_trigger.service
 check_command "Configuration du service trigger_reset"
 echo "Démarrage du service de détection du bouton..."
-
-
 
 check_command "Mise à jour des paquets"
 apt install dnsmasq -y
