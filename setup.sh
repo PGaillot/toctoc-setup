@@ -153,6 +153,10 @@ systemctl start dnsmasq
 systemctl start hostapd
 check_command "Démarrage des services WiFi"
 
+
+git clone https://github.com/PGaillot/toctoc-conect-frontend.git
+cp -r toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
+
 # --- Installation de Lighttpd ---
 apt install lighttpd -y
 check_command "Installation de Lighttpd"
