@@ -3,6 +3,10 @@
 # Basé sur le tutoriel de raspberrypi-guide.com
 # https://raspberrypi-guide.github.io/networking/create-wireless-access-point
 
+LOG_FILE="/home/toctoc/config_log.txt"
+exec > >(tee -a "$LOG_FILE") 2>&1
+echo "Début de la configuration : $(date)"
+
 # Fonction pour vérifier si une commande s'est bien exécutée
 led_control="/home/toctoc/toctoc-setup/led_control.py"
 sudo apt-get install python3-rpi.gpio
@@ -40,8 +44,6 @@ while getopts "i:p" opt; do
     esac
 done
 
-python3 "$led_control" warning
-
 cat <<EOF >/etc/systemd/system/reset_trigger.service
 [Unit]
 Description=Service pour gérer la détection du bouton reset.
@@ -65,9 +67,7 @@ systemctl enable reset_trigger.service
 check_command "Configuration du service trigger_reset"
 echo "Démarrage du service de détection du bouton..."
 
-
-apt install python3-flask -y
-check_command "Installation de Flask"
+check_command "Mise à jour des paquets"
 apt install dnsmasq -y
 check_command "Installation de dnsmasq"
 apt install hostapd -y
@@ -79,28 +79,8 @@ check_command "Installation de iptables-persistent"
 apt install dhcpcd5 -y
 check_command "Installation de dhcpcd5"
 
-# Création du service flask
-cat <<EOF >/etc/systemd/system/flask_app.service
-[Unit]
-Description=Service pour l'application Flask
-After=multi-user.target
-
-[Service]
-ExecStart=/usr/bin/python3 /home/toctoc/toctoc-setup/app.py
-WorkingDirectory=/home/toctoc/toctoc-setup/
-StandardOutput=inherit
-StandardError=inherit
-Restart=always
-User=toctoc
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload
-systemctl start flask_app.service
-systemctl enable flask_app.service
-check_command "Démarrage du service Flask"
+# assignation des droits dans /var/www/html/ à "www-data" 
+chown -R www-data:www-data /var/www/html/
 
 # Arrêt des services
 systemctl stop dnsmasq
@@ -163,20 +143,71 @@ check_command "Configuration du pare-feu"
 netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
-echo "🎉 Configuration (presque) terminee !"
-echo "Vous allez perdre la connection wifi. C'est normal !"
-echo "Veuillez patienter le temps que le  le Raspberry Pi termine et redemarre (environ 5 minutes)."
+# --- Installation de Lighttpd ---
+apt install lighttpd -y
+check_command "Installation de Lighttpd"
+
+# --- Copie du front-end local 
+git clone https://github.com/PGaillot/toctoc-conect-frontend.git
+mkdir -p /var/www/html/
+cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/ && rm -rf toctoc-conect-frontend
+check_command "Copie du front-end"
+
+echo "-- 🎉 Configuration (presque) terminee ! 🎉 --"
+echo "Vous allez perdre la connection wifi. Pas de panique, c'est normal !"
+echo "Veuillez patienter le temps que le Raspberry Pi termine (environ 2 minutes)."
+echo "---"
 echo "Configuration du point d'accès : TocToc-$ID"
 echo " - SSID: TocToc-$ID"
 echo " - Mot de passe: $PASSWORD"
 echo "Adresse IP statique: 192.168.4.1/24"
 
-# Déconnexion du réseau WiFi actuel (si connecté)
+# Déconnexion du réseau WiFi actuel
 nmcli device disconnect wlan0
 
 # Démarrage des services
 systemctl unmask hostapd
 systemctl enable hostapd
+
+sleep 10  # Pause de 3 secondes pour laisser dhcpcd se configurer correctement
 systemctl start dnsmasq
 systemctl start hostapd
+check_command "Démarrage des services WiFi"
+
+# Configuartion de la conf principale de lighttpd
+if ! grep -q 'include "conf.d/toctoc-local.conf"' /etc/lighttpd/lighttpd.conf; then
+    echo 'include "conf.d/toctoc-local.conf"' >> /etc/lighttpd/lighttpd.conf
+fi
+
+mkdir -p /etc/lighttpd/conf.d
+touch /etc/lighttpd/conf.d/toctoc-local.conf
+
+# Configuration de Lighttpd pour utiliser l'adresse IP statique
+cat <<EOF >/etc/lighttpd/conf.d/toctoc-local.conf
+server.modules += ( "mod_dirlisting" )
+
+server.document-root = "/var/www/html"
+dir-listing.activate = "enable"
+dir-listing.hide-dotfiles = "enable"
+
+index-file.names = ( "index.html" )
+server.port = 80
+server.bind = "192.168.4.1"
+EOF
+check_command "Configuration de Lighttpd"
+
+# Vérifier et appliquer la configuration Lighttpd
+lighttpd -t -f /etc/lighttpd/conf.d/toctoc-local.conf >> $LOG_FILE
+check_command "Vérification de la configuration Lighttpd"
+
+# Redémarrage et activation de Lighttpd
+systemctl restart lighttpd >> $LOG_FILE
+systemctl enable lighttpd >> $LOG_FILE
+check_command "Démarrage de Lighttpd"
+
+# Autres configurations du script (non liées à Lighttpd)
+
 python3 "$led_control" success
+
+echo "Lighttpd est installé et configuré."
+echo "Vous pouvez vous connecter au Raspberry Pi via Wi-Fi et accéder au site web via l'adresse http://192.168.4.1"
