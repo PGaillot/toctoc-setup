@@ -177,7 +177,7 @@ server.modules = (
     "mod_alias",
     "mod_compress",
     "mod_redirect",
-    "mod_mime",
+    "mod_mimetype"
 )
 
 server.document-root = "/var/www/html"
@@ -188,6 +188,14 @@ server.errorlog = "/var/log/lighttpd/error.log"
 server.pid-file = "/var/run/lighttpd.pid"
 server.username = "www-data"
 server.groupname = "www-data"
+
+mimetype.assign = (
+    ".html" => "text/html",
+    ".css" => "text/css",
+    ".js" => "application/javascript",
+    ".jpg" => "image/jpeg",
+    ".png" => "image/png"
+)
 EOF
 check_command "Configuration de Lighttpd"
 
