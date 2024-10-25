@@ -134,17 +134,6 @@ check_command "Configuration du pare-feu"
 netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
-git clone https://github.com/PGaillot/toctoc-conect-frontend.git
-mkdir -p /var/www/html/
-cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
-check_command "Copie du front-end"
-
-chown -R www-data:www-data /var/www/html
-check_command "Attribution des droits au dossier /var/www/html"
-
-chmod -R 750 /var/www/html
-check_command "Mise à jour des permissions pour /var/www/html"
-
 echo "-- 🎉 Configuration (presque) terminee ! 🎉 --"
 echo "Vous allez perdre la connection wifi. Pas de panique, c'est normal !"
 echo "Veuillez patienter le temps que le Raspberry Pi termine (environ 2 minutes)."
@@ -167,6 +156,17 @@ check_command "Démarrage des services WiFi"
 # --- Installation de Lighttpd ---
 apt install lighttpd -y
 check_command "Installation de Lighttpd"
+
+git clone https://github.com/PGaillot/toctoc-conect-frontend.git
+mkdir -p /var/www/html/
+cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
+check_command "Copie du front-end"
+
+chown -R www-data:www-data /var/www/html
+check_command "Attribution des droits au dossier /var/www/html"
+
+chmod -R 750 /var/www/html
+check_command "Mise à jour des permissions pour /var/www/html"
 
 # Configuration de Lighttpd pour utiliser l'adresse IP statique
 cat <<EOF >/etc/lighttpd/lighttpd.conf
