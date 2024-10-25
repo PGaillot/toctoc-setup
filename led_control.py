@@ -14,6 +14,19 @@ GPIO.setup(LED_VERTE, GPIO.OUT)
 GPIO.setup(LED_ORANGE, GPIO.OUT)
 GPIO.setup(LED_ROUGE, GPIO.OUT)
 
+def clignoter_led(led, vitesse=0.5):
+    GPIO.output(LED_VERTE, GPIO.LOW)
+    GPIO.output(LED_ORANGE, GPIO.LOW)
+    GPIO.output(LED_ROUGE, GPIO.LOW)
+    
+    # Clignotement en continu
+    try:
+        while True:
+            GPIO.output(led, GPIO.HIGH)
+            time.sleep(vitesse)
+            GPIO.output(led, GPIO.LOW)
+            time.sleep(vitesse)
+
 # Fonction pour allumer une LED et éteindre les autres
 def allumer_led(led):
     GPIO.output(LED_VERTE, GPIO.LOW)
@@ -26,21 +39,25 @@ def led_status(status):
     if status == "success":
         allumer_led(LED_VERTE)
         return 0  # Succès
+    elif status == "loading":
+        clignoter_led(LED_VERTE)
+        return 2  # Loading
     elif status == "warning":
         allumer_led(LED_ORANGE)
-        return 1  # Warning
+        return 3  # Warning
     elif status == "error":
         allumer_led(LED_ROUGE)
-        return 2  # Erreur
+        return 1  # Erreur
     else:
         print("Statut inconnu")
-        return 3  # Statut inconnu
+        allumer_led(LED_ROUGE)
+        return 1  # Statut inconnu
 
 # Lecture du statut passé en argument
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage : python3 led_manager.py [success|warning|error]")
-        sys.exit(3)
+        print("Usage : python3 led_manager.py [success|loading|warning|error]")
+        sys.exit(1)
 
     status = sys.argv[1]
     exit_code = led_status(status)
