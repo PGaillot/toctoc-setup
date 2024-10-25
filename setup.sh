@@ -14,10 +14,7 @@ check_command() {
         python3 "$led_control" error
         exit 1
     else
-        python3 "$led_control" success
         echo "- ☑️ : $1"
-        sleep 1
-        python3 "$led_control" warning
     fi
 }
 
@@ -137,6 +134,10 @@ check_command "Configuration du pare-feu"
 netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
+# --- Installation de Lighttpd ---
+apt install lighttpd -y
+check_command "Installation de Lighttpd"
+
 echo "-- 🎉 Configuration (presque) terminee ! 🎉 --"
 echo "Vous allez perdre la connection wifi. Pas de panique, c'est normal !"
 echo "Veuillez patienter le temps que le Raspberry Pi termine (environ 2 minutes)."
@@ -157,7 +158,6 @@ sleep 3  # Pause de 3 secondes pour laisser dhcpcd se configurer correctement
 systemctl start dnsmasq
 systemctl start hostapd
 check_command "Démarrage des services WiFi"
-
 
 git clone https://github.com/PGaillot/toctoc-conect-frontend.git
 mkdir -p /var/www/html/
