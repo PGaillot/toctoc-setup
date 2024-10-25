@@ -79,6 +79,9 @@ check_command "Installation de iptables-persistent"
 apt install dhcpcd5 -y
 check_command "Installation de dhcpcd5"
 
+# assignation des droits dans /var/www/html/ à "www-data" 
+chown -R www-data:www-data /var/www/html/
+
 # Arrêt des services
 systemctl stop dnsmasq
 systemctl stop hostapd
@@ -156,19 +159,25 @@ nmcli device disconnect wlan0
 systemctl unmask hostapd
 systemctl enable hostapd
 
-sleep 3  # Pause de 3 secondes pour laisser dhcpcd se configurer correctement
+sleep 10  # Pause de 3 secondes pour laisser dhcpcd se configurer correctement
 systemctl start dnsmasq
 systemctl start hostapd
 check_command "Démarrage des services WiFi"
 
 git clone https://github.com/PGaillot/toctoc-conect-frontend.git
 mkdir -p /var/www/html/
-cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
+cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/ && rm -rf toctoc-conect-frontend
 check_command "Copie du front-end"
 
 # --- Installation de Lighttpd ---
 apt install lighttpd -y
 check_command "Installation de Lighttpd"
+
+# Configuartion de la conf principale de lighttpd
+if ! grep -q 'include "conf.d/toctoc-local.conf"' /etc/lighttpd/lighttpd.conf; then
+    echo 'include "conf.d/toctoc-local.conf"' >> /etc/lighttpd/lighttpd.conf
+fi
+
 
 # Configuration de Lighttpd pour utiliser l'adresse IP statique
 cat <<EOF >/etc/lighttpd/conf.d/toctoc-local.conf
@@ -185,7 +194,7 @@ EOF
 check_command "Configuration de Lighttpd"
 
 # Vérifier et appliquer la configuration Lighttpd
-lighttpd -t -f /etc/lighttpd/lighttpd.conf >> $LOG_FILE
+lighttpd -t -f /etc/lighttpd/conf.d/toctoc-local.conf >> $LOG_FILE
 check_command "Vérification de la configuration Lighttpd"
 
 # Redémarrage et activation de Lighttpd
