@@ -204,21 +204,13 @@ mimetype.assign = (
 EOF
 check_command "Configuration de Lighttpd"
 
+lighttpd -t -f /etc/lighttpd/lighttpd.conf >> $LOG_FILE
+
 # Redémarrage et activation de Lighttpd
 systemctl restart lighttpd >> $LOG_FILE
 systemctl enable lighttpd >> $LOG_FILE
 check_command "Démarrage de Lighttpd"
 
-
-# Tester si le service Lighttpd est actif
-systemctl status lighttpd >> $LOG_FILE
-journalctl -xeu lighttpd >> $LOG_FILE
-systemctl is-active lighttpd >> $LOG_FILE
-
-# Vérifier si wlan0 est configuré correctement
-ip addr show wlan0 >> $LOG_FILE
-
-iptables -L -v -n >> $LOG_FILE
 
 python3 "$led_control" success
 
