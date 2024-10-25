@@ -178,6 +178,8 @@ if ! grep -q 'include "conf.d/toctoc-local.conf"' /etc/lighttpd/lighttpd.conf; t
     echo 'include "conf.d/toctoc-local.conf"' >> /etc/lighttpd/lighttpd.conf
 fi
 
+mkdir -p /etc/lighttpd/conf.d
+touch /etc/lighttpd/conf.d/toctoc-local.conf
 
 # Configuration de Lighttpd pour utiliser l'adresse IP statique
 cat <<EOF >/etc/lighttpd/conf.d/toctoc-local.conf
