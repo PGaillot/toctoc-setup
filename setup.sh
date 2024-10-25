@@ -139,9 +139,6 @@ check_command "Configuration du pare-feu"
 netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
-# --- Installation de Lighttpd ---
-apt install lighttpd -y
-check_command "Installation de Lighttpd"
 
 echo "-- 🎉 Configuration (presque) terminee ! 🎉 --"
 echo "Vous allez perdre la connection wifi. Pas de panique, c'est normal !"
@@ -169,48 +166,34 @@ mkdir -p /var/www/html/
 cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
 check_command "Copie du front-end"
 
-chown -R www-data:www-data /var/www/html
-check_command "Attribution des droits au dossier /var/www/html"
-
-chmod -R 750 /var/www/html
-check_command "Mise à jour des permissions pour /var/www/html"
+# --- Installation de Lighttpd ---
+apt install lighttpd -y
+check_command "Installation de Lighttpd"
 
 # Configuration de Lighttpd pour utiliser l'adresse IP statique
-cat <<EOF >/etc/lighttpd/lighttpd.conf
-server.modules = (
-    "mod_access",
-    "mod_alias",
-    "mod_compress",
-    "mod_redirect",
-    "mod_mimetype"
-)
+cat <<EOF >/etc/lighttpd/conf.d/toctoc-local.conf
+server.modules += ( "mod_dirlisting" )
 
 server.document-root = "/var/www/html"
+dir-listing.activate = "enable"
+dir-listing.hide-dotfiles = "enable"
+
 index-file.names = ( "index.html" )
 server.port = 80
 server.bind = "192.168.4.1"
-server.errorlog = "/var/log/lighttpd/error.log"
-server.pid-file = "/var/run/lighttpd.pid"
-server.username = "www-data"
-server.groupname = "www-data"
-
-mimetype.assign = (
-    ".html" => "text/html",
-    ".css" => "text/css",
-    ".js" => "application/javascript",
-    ".jpg" => "image/jpeg",
-    ".png" => "image/png"
-)
 EOF
 check_command "Configuration de Lighttpd"
 
+# Vérifier et appliquer la configuration Lighttpd
 lighttpd -t -f /etc/lighttpd/lighttpd.conf >> $LOG_FILE
+check_command "Vérification de la configuration Lighttpd"
 
 # Redémarrage et activation de Lighttpd
 systemctl restart lighttpd >> $LOG_FILE
 systemctl enable lighttpd >> $LOG_FILE
 check_command "Démarrage de Lighttpd"
 
+# Autres configurations du script (non liées à Lighttpd)
 
 python3 "$led_control" success
 
