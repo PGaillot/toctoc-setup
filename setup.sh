@@ -139,6 +139,12 @@ mkdir -p /var/www/html/
 cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
 check_command "Copie du front-end"
 
+chown -R www-data:www-data /var/www/html
+check_command "Attribution des droits au dossier /var/www/html"
+
+chmod -R 750 /var/www/html
+check_command "Mise à jour des permissions pour /var/www/html"
+
 echo "-- 🎉 Configuration (presque) terminee ! 🎉 --"
 echo "Vous allez perdre la connection wifi. Pas de panique, c'est normal !"
 echo "Veuillez patienter le temps que le Raspberry Pi termine (environ 2 minutes)."
