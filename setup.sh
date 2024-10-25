@@ -142,6 +142,15 @@ check_command "Configuration du pare-feu"
 netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
+# --- Installation de Lighttpd ---
+apt install lighttpd -y
+check_command "Installation de Lighttpd"
+
+# --- Copie du front-end local 
+git clone https://github.com/PGaillot/toctoc-conect-frontend.git
+mkdir -p /var/www/html/
+cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/ && rm -rf toctoc-conect-frontend
+check_command "Copie du front-end"
 
 echo "-- 🎉 Configuration (presque) terminee ! 🎉 --"
 echo "Vous allez perdre la connection wifi. Pas de panique, c'est normal !"
@@ -163,15 +172,6 @@ sleep 10  # Pause de 3 secondes pour laisser dhcpcd se configurer correctement
 systemctl start dnsmasq
 systemctl start hostapd
 check_command "Démarrage des services WiFi"
-
-git clone https://github.com/PGaillot/toctoc-conect-frontend.git
-mkdir -p /var/www/html/
-cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/ && rm -rf toctoc-conect-frontend
-check_command "Copie du front-end"
-
-# --- Installation de Lighttpd ---
-apt install lighttpd -y
-check_command "Installation de Lighttpd"
 
 # Configuartion de la conf principale de lighttpd
 if ! grep -q 'include "conf.d/toctoc-local.conf"' /etc/lighttpd/lighttpd.conf; then
