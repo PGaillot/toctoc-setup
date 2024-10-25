@@ -3,6 +3,10 @@
 # Basé sur le tutoriel de raspberrypi-guide.com
 # https://raspberrypi-guide.github.io/networking/create-wireless-access-point
 
+LOG_FILE="/home/toctoc/config_log.txt"
+exec > >(tee -a "$LOG_FILE") 2>&1
+echo "Début de la configuration : $(date)"
+
 # Fonction pour vérifier si une commande s'est bien exécutée
 led_control="/home/toctoc/toctoc-setup/led_control.py"
 sudo apt-get install python3-rpi.gpio
@@ -204,6 +208,13 @@ check_command "Configuration de Lighttpd"
 systemctl restart lighttpd
 systemctl enable lighttpd
 check_command "Démarrage de Lighttpd"
+
+# Tester si le service Lighttpd est actif
+systemctl is-active lighttpd >> $LOG_FILE
+# Vérifier si wlan0 est configuré correctement
+ip addr show wlan0 >> $LOG_FILE
+
+iptables -L -v -n >> $LOG_FILE
 
 python3 "$led_control" success
 
