@@ -14,7 +14,10 @@ check_command() {
         python3 "$led_control" error
         exit 1
     else
+        python3 "$led_control" success
         echo "- ☑️ : $1"
+        sleep 1
+        python3 "$led_control" warning
     fi
 }
 
@@ -155,6 +158,7 @@ systemctl start dnsmasq
 systemctl start hostapd
 check_command "Démarrage des services WiFi"
 
+
 git clone https://github.com/PGaillot/toctoc-conect-frontend.git
 mkdir -p /var/www/html/
 cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
@@ -165,10 +169,6 @@ check_command "Attribution des droits au dossier /var/www/html"
 
 chmod -R 750 /var/www/html
 check_command "Mise à jour des permissions pour /var/www/html"
-
-# --- Installation de Lighttpd ---
-apt install lighttpd -y
-check_command "Installation de Lighttpd"
 
 # Configuration de Lighttpd pour utiliser l'adresse IP statique
 cat <<EOF >/etc/lighttpd/lighttpd.conf
