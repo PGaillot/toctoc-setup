@@ -149,6 +149,8 @@ nmcli device disconnect wlan0
 # Démarrage des services
 systemctl unmask hostapd
 systemctl enable hostapd
+
+sleep 3  # Pause de 3 secondes pour laisser dhcpcd se configurer correctement
 systemctl start dnsmasq
 systemctl start hostapd
 check_command "Démarrage des services WiFi"
