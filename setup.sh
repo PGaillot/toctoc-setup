@@ -155,10 +155,6 @@ systemctl start dnsmasq
 systemctl start hostapd
 check_command "Démarrage des services WiFi"
 
-# --- Installation de Lighttpd ---
-apt install lighttpd -y
-check_command "Installation de Lighttpd"
-
 git clone https://github.com/PGaillot/toctoc-conect-frontend.git
 mkdir -p /var/www/html/
 cp -rf toctoc-conect-frontend/dist/toctoc-conect-frontend/browser/* /var/www/html/
@@ -169,6 +165,10 @@ check_command "Attribution des droits au dossier /var/www/html"
 
 chmod -R 750 /var/www/html
 check_command "Mise à jour des permissions pour /var/www/html"
+
+# --- Installation de Lighttpd ---
+apt install lighttpd -y
+check_command "Installation de Lighttpd"
 
 # Configuration de Lighttpd pour utiliser l'adresse IP statique
 cat <<EOF >/etc/lighttpd/lighttpd.conf
