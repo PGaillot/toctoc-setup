@@ -6,7 +6,7 @@
 # Fonction pour vérifier si une commande s'est bien exécutée
 led_control="/home/toctoc/toctoc-setup/led_control.py"
 sudo apt-get install python3-rpi.gpio
-python3 "$led_control" loading
+python3 "$led_control" error
 
 check_command() {
     if [ $? -ne 0 ]; then
