@@ -15,25 +15,24 @@ GPIO.setup(LED_ORANGE, GPIO.OUT)
 GPIO.setup(LED_ROUGE, GPIO.OUT)
 
 def clignoter_led(led, vitesse=0.5):
-    eteindre_leds()
+    GPIO.output(LED_VERTE, GPIO.LOW)
+    GPIO.output(LED_ORANGE, GPIO.LOW)
+    GPIO.output(LED_ROUGE, GPIO.LOW)
     
     # Clignotement en continu
     try:
         while True:
             GPIO.output(led, GPIO.HIGH)
             time.sleep(vitesse)
-            eteindre_leds()
+            GPIO.output(led, GPIO.LOW)
             time.sleep(vitesse)
 
 # Fonction pour allumer une LED et éteindre les autres
 def allumer_led(led):
-    eteindre_leds()
-    GPIO.output(led, GPIO.HIGH)
-
-def eteindre_leds():
     GPIO.output(LED_VERTE, GPIO.LOW)
     GPIO.output(LED_ORANGE, GPIO.LOW)
     GPIO.output(LED_ROUGE, GPIO.LOW)
+    GPIO.output(led, GPIO.HIGH)
 
 # Fonction pour gérer l'état des LED et retourner un code de sortie
 def led_status(status):
