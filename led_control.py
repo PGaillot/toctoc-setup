@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import sys
 import time
+import threading
 
 # Définir les ports des LED
 LED_VERTE = 21  # Succès
@@ -14,49 +15,61 @@ GPIO.setup(LED_VERTE, GPIO.OUT)
 GPIO.setup(LED_ORANGE, GPIO.OUT)
 GPIO.setup(LED_ROUGE, GPIO.OUT)
 
+# Variable pour contrôler le clignotement
+clignotement_actif = False
+thread_clignotement = None
+
 def clignoter_led(led, vitesse=0.5):
-    eteindre_leds()
-    
-    try:
-        # Clignotement en continu jusqu'à interruption
-        while True:
-            GPIO.output(led, GPIO.HIGH)
-            time.sleep(vitesse)
-            eteindre_leds()
-            time.sleep(vitesse)
-    finally:
-        eteindre_leds()
-        GPIO.cleanup()  # Libère les GPIO en cas d'interruption
+    global clignotement_actif
+    clignotement_actif = True
+
+    while clignotement_actif:
+        GPIO.output(led, GPIO.HIGH)
+        time.sleep(vitesse)
+        GPIO.output(led, GPIO.LOW)
+        time.sleep(vitesse)
+
+# Fonction pour démarrer le clignotement dans un thread
+def demarrer_clignotement(led, vitesse=0.5):
+    global thread_clignotement
+    if thread_clignotement is None or not thread_clignotement.is_alive():
+        thread_clignotement = threading.Thread(target=clignoter_led, args=(led, vitesse))
+        thread_clignotement.start()
+
+# Fonction pour arrêter le clignotement
+def arreter_clignotement():
+    global clignotement_actif
+    clignotement_actif = False
+    if thread_clignotement:
+        thread_clignotement.join()
 
 # Fonction pour allumer une LED et éteindre les autres
 def allumer_led(led):
     eteindre_leds()
     GPIO.output(led, GPIO.HIGH)
-    
 
 def eteindre_leds():
     GPIO.output(LED_VERTE, GPIO.LOW)
     GPIO.output(LED_ORANGE, GPIO.LOW)
     GPIO.output(LED_ROUGE, GPIO.LOW)
 
-# Fonction pour gérer l'état des LED et retourner un code de sortie
+# Fonction pour gérer l'état des LED
 def led_status(status):
     if status == "success":
+        arreter_clignotement()
         allumer_led(LED_VERTE)
-        return 0  # Succès
     elif status == "loading":
-        clignoter_led(LED_VERTE)
-        return 2  # Loading
+        demarrer_clignotement(LED_VERTE)
     elif status == "warning":
+        arreter_clignotement()
         allumer_led(LED_ORANGE)
-        return 3  # Warning
     elif status == "error":
+        arreter_clignotement()
         allumer_led(LED_ROUGE)
-        return 1  # Erreur
     else:
         print("Statut inconnu")
+        arreter_clignotement()
         allumer_led(LED_ROUGE)
-        return 1  # Statut inconnu
 
 # Lecture du statut passé en argument
 if __name__ == "__main__":
@@ -65,8 +78,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     status = sys.argv[1]
-    exit_code = led_status(status)
-    
+    led_status(status)
+
     # Libère les GPIO après exécution
     GPIO.cleanup()
-    sys.exit(exit_code)
