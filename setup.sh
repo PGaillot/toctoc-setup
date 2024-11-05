@@ -68,11 +68,7 @@ systemctl stop dnsmasq
 systemctl stop hostapd
 
 # Configuration de l'adresse IP statique
-cat <<EOF >/etc/dhcpcd.conf
-interface wlan0
-    static ip_address=192.168.4.1/24
-    nohook wpa_supplicant
-EOF
+cp ./config/dhcpcd.conf /etc/dhcpcd.conf
 check_command "Configuration de l'adresse IP statique"
 
 # Redémarrage du service dhcpcd
@@ -81,10 +77,7 @@ check_command "Redémarrage de dhcpcd"
 
 # Configuration de dnsmasq
 mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
-cat <<EOF >/etc/dnsmasq.conf
-interface=wlan0
-dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h
-EOF
+cp ./config/dnsmasq.conf /etc/dnsmasq.conf
 check_command "Configuration de dnsmasq"
 
 # Configuration de hostapd
@@ -103,6 +96,10 @@ wpa_key_mgmt=WPA-PSK
 wpa_pairwise=TKIP
 rsn_pairwise=CCMP
 EOF
+
+sed -i "/wpa_passphrase=/c\\wpa_passphrase=$PASSWORD" ./config/hostapd.conf
+sed -i "ssid=/c\\ssid=TocToc-$ID" ./config/hostapd.conf
+cp ./config/hostapd.conf /etc/hostapd/hostapd.conf
 check_command "Configuration de hostapd"
 
 # Indication de l'emplacement du fichier de configuration
