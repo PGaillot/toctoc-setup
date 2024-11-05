@@ -1,0 +1,14 @@
+[Unit]
+Description=Service pour gérer la détection du bouton reset.
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/toctoc/toctoc-setup/reset_trigger.py
+WorkingDirectory=/home/toctoc/toctoc-setup/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=toctoc
+
+[Install]
+WantedBy=multi-user.target

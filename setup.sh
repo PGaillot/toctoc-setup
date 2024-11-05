@@ -41,23 +41,7 @@ while getopts "i:p" opt; do
 done
 
 python3 "$led_control" warning
-
-cat <<EOF >/etc/systemd/system/reset_trigger.service
-[Unit]
-Description=Service pour gérer la détection du bouton reset.
-After=multi-user.target
-
-[Service]
-ExecStart=/usr/bin/python3 /home/toctoc/toctoc-setup/reset_trigger.py
-WorkingDirectory=/home/toctoc/toctoc-setup/
-StandardOutput=inherit
-StandardError=inherit
-Restart=always
-User=toctoc
-
-[Install]
-WantedBy=multi-user.target
-EOF
+cp ./config/reset_trigger.service /etc/systemd/system/reset_trigger.service
 
 systemctl daemon-reload
 systemctl start reset_trigger.service
