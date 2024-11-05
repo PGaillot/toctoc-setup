@@ -3,6 +3,8 @@
 # Basé sur le tutoriel de raspberrypi-guide.com
 # https://raspberrypi-guide.github.io/networking/create-wireless-access-point
 
+total_steps=$(grep -c "check_command" "$0")
+current_step=0
 # Fonction pour vérifier si une commande s'est bien exécutée
 led_control="/home/toctoc/toctoc-setup/led_control.py"
 sudo apt-get install python3-rpi.gpio
@@ -14,7 +16,7 @@ check_command() {
         python3 "$led_control" error
         exit 1
     else
-        echo "- ☑️ : $1"
+        echo "[$current_step/$total_steps] - ☑️ : $1"
     fi
 }
 
@@ -47,9 +49,6 @@ systemctl daemon-reload
 systemctl start reset_trigger.service
 systemctl enable reset_trigger.service
 check_command "Configuration du service trigger_reset"
-echo "Démarrage du service de détection du bouton..."
-
-
 
 check_command "Mise à jour des paquets"
 apt install dnsmasq -y
@@ -81,22 +80,6 @@ cp ./config/dnsmasq.conf /etc/dnsmasq.conf
 check_command "Configuration de dnsmasq"
 
 # Configuration de hostapd
-cat <<EOF >/etc/hostapd/hostapd.conf
-country_code=FR
-interface=wlan0
-ssid=TocToc-$ID
-hw_mode=g
-channel=7
-macaddr_acl=0
-auth_algs=1
-ignore_broadcast_ssid=0
-wpa=2
-wpa_passphrase=$PASSWORD
-wpa_key_mgmt=WPA-PSK
-wpa_pairwise=TKIP
-rsn_pairwise=CCMP
-EOF
-
 sed -i "/wpa_passphrase=/c\\wpa_passphrase=$PASSWORD" ./config/hostapd.conf
 sed -i "ssid=/c\\ssid=TocToc-$ID" ./config/hostapd.conf
 cp ./config/hostapd.conf /etc/hostapd/hostapd.conf
