@@ -3,7 +3,7 @@
 # Basé sur le tutoriel de raspberrypi-guide.com
 # https://raspberrypi-guide.github.io/networking/create-wireless-access-point
 
-total_steps=$(grep -c "check_command" "$0")
+total_steps=$(( $(grep -c "check_command" "$0") - 2 )) # deux par ce que c'est écris é fois pour rien .
 current_step=0
 # Fonction pour vérifier si une commande s'est bien exécutée
 led_control="/home/toctoc/toctoc-setup/led_control.py"
@@ -16,8 +16,8 @@ check_command() {
         python3 "$led_control" error
         exit 1
     else
-        current_step=$((current_step + 1))  # Incrémente current_step correctement
-        echo "[$current_step/$total_steps] - ☑️ : $1"
+        current_step=$((current_step + 1)) 
+        echo "\n[$current_step/$total_steps] - ☑️ : $1\n"
     fi
 }
 
@@ -103,13 +103,13 @@ check_command "Configuration du pare-feu"
 netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
-echo "🎉 Configuration (presque) terminee !"
+echo "\n\n🎉 Configuration (presque) terminee !"
 echo "Vous allez perdre la connection wifi. C'est normal !"
 echo "Veuillez patienter le temps que le  le Raspberry Pi termine et redemarre (environ 5 minutes)."
 echo "Configuration du point d'accès : TocToc-$ID"
 echo " - SSID: TocToc-$ID"
 echo " - Mot de passe: $PASSWORD"
-echo "Adresse IP statique: 192.168.4.1/24"
+echo "Adresse IP statique: http://192.168.4.1"
 
 # Déconnexion du réseau WiFi actuel (si connecté)
 nmcli device disconnect wlan0
