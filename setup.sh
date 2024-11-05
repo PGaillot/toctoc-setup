@@ -16,6 +16,7 @@ check_command() {
         python3 "$led_control" error
         exit 1
     else
+        current_step=$((current_step + 1))  # Incrémente current_step correctement
         echo "[$current_step/$total_steps] - ☑️ : $1"
     fi
 }
@@ -81,7 +82,7 @@ check_command "Configuration de dnsmasq"
 
 # Configuration de hostapd
 sed -i "/wpa_passphrase=/c\\wpa_passphrase=$PASSWORD" ./config/hostapd.conf
-sed -i "ssid=/c\\ssid=TocToc-$ID" ./config/hostapd.conf
+sed -i "/^ssid=TocToc-/c\ssid=TocToc-$ID" ./config/hostapd.conf
 cp ./config/hostapd.conf /etc/hostapd/hostapd.conf
 check_command "Configuration de hostapd"
 
