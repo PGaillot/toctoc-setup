@@ -17,7 +17,7 @@ check_command() {
         exit 1
     else
         current_step=$((current_step + 1)) 
-        echo "\n[$current_step/$total_steps] - ☑️ : $1\n"
+        echo -e [$current_step/$total_steps] - ☑️ : $1\n"
     fi
 }
 
@@ -103,7 +103,7 @@ check_command "Configuration du pare-feu"
 netfilter-persistent save
 check_command "Sauvegarde des règles iptables"
 
-echo "\n\n🎉 Configuration (presque) terminee !"
+echo -e "\n\n🎉 Configuration (presque) terminee !"
 echo "Vous allez perdre la connection wifi. C'est normal !"
 echo "Veuillez patienter le temps que le  le Raspberry Pi termine et redemarre (environ 5 minutes)."
 echo "Configuration du point d'accès : TocToc-$ID"
