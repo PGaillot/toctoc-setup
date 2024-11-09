@@ -17,7 +17,7 @@ check_command() {
         exit 1
     else
         current_step=$((current_step + 1)) 
-        echo -e [$current_step/$total_steps] - ☑️ : $1\n"
+        echo -e "\n[$current_step/$total_steps] - ☑️ : $1\n"
     fi
 }
 
