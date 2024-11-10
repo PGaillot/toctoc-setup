@@ -185,7 +185,7 @@ touch /etc/lighttpd/conf.d/toctoc-local.conf
 cat <<EOF >/etc/lighttpd/conf.d/toctoc-local.conf
 server.modules += ( "mod_dirlisting" )
 
-server.document-root = "/var/www/html"
+#server.document-root = "/var/www/html"
 dir-listing.activate = "enable"
 dir-listing.hide-dotfiles = "enable"
 
